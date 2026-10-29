@@ -1,0 +1,8 @@
+<UserControl
+    x:Class="QuicklyTools.Views.FavoritesView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:QuicklyTools.ViewModels">
+
+   
+</UserControl>

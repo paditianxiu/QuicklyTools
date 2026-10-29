@@ -1,0 +1,144 @@
+<Window
+    x:Class="QuicklyTools.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:QuicklyTools.ViewModels"
+    TransparencyLevelHint="Mica"
+    Background="Transparent"
+    Title="QuicklyTools"
+    Height="680"
+    Width="1040"
+    MinHeight="560"
+    MinWidth="860"
+    x:DataType="vm:MainViewModel"
+    ExtendClientAreaTitleBarHeightHint="42"
+    ExtendClientAreaToDecorationsHint="True"
+    WindowDecorations="BorderOnly"
+    Icon="/Assets/avalonia-logo.ico"
+    mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="Button.titlebar">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Width" Value="38" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="18" />
+        </Style>
+        <Style Selector="Button.titlebar:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#12000000" />
+        </Style>
+        <Style Selector="Button.titlebar:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#22000000" />
+        </Style>
+
+        <Style Selector="Button.nav-item">
+            <Setter Property="Width" Value="200" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Foreground" Value="#25282D" />
+        </Style>
+        <Style Selector="Button.nav-item:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#E7EBF0" />
+        </Style>
+        <Style Selector="Button.nav-item.selected /template/ ContentPresenter">
+            <Setter Property="Background" Value="#D8E9FC" />
+        </Style>
+        <Style Selector="Button.nav-item.selected">
+            <Setter Property="Foreground" Value="#101820" />
+        </Style>
+
+        <Style Selector="Button.icon-button">
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Foreground" Value="#25282D" />
+        </Style>
+        <Style Selector="Button.icon-button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#E3E8EF" />
+        </Style>
+
+        <Style Selector="TextBlock.icon-glyph">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="21" />
+        </Style>
+    </Window.Styles>
+
+    <Border Background="#F4F5F7" CornerRadius="18" ClipToBounds="True">
+        <Grid ColumnDefinitions="230,*">
+            <Border PointerPressed="TitleBar_PointerPressed" Padding="0,50,0,0"  Grid.Column="0" Background="#F4F5F7" BorderBrush="#E4E7EB" BorderThickness="0,0,1,0">
+
+                <Grid RowDefinitions="42,*">
+                    <Grid Grid.Row="0" >
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="24,0,0,0" Spacing="10">
+                            <Border Width="29" Height="29" CornerRadius="9" Background="#1E2732">
+                                <TextBlock Text="Q" Foreground="White" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Text="QuicklyTools" FontSize="20" FontWeight="SemiBold" Foreground="#15181C" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Margin="14,24,14,0">
+                        <ItemsControl ItemsSource="{Binding NavigationItems}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:NavigationItemViewModel">
+                                    <Button Classes="nav-item" Classes.selected="{Binding IsSelected}" Command="{Binding Command}">
+                                        <Grid ColumnDefinitions="34,*">
+                                            <TextBlock Grid.Column="0" Classes="icon-glyph" Text="{Binding Icon}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Label}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Background="#F8F9FA" >
+                <Grid RowDefinitions="42,*" >
+                    <Grid Grid.Row="0" PointerPressed="TitleBar_PointerPressed"
+                          Background="Transparent" ZIndex="999">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0" Spacing="2">
+                            <Button Classes="titlebar" Foreground="#10B82A" Content="&#x25CF;" Command="{Binding MinimizeSelfCommand}" ToolTip.Tip="Minimize" />
+                            <Button Classes="titlebar" Foreground="#F2A900" Content="&#x25CF;" Command="{Binding MaximizeSelfCommand}" ToolTip.Tip="Maximize" />
+                            <Button Classes="titlebar" Foreground="#F04D50" Content="&#x25CF;" Command="{Binding CloseSelfCommand}" ToolTip.Tip="Close" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="1" RowDefinitions="92,*">
+                        <Border Grid.Row="0" Background="#F8F9FA" BorderBrush="#E8EAED" BorderThickness="0,0,0,1" Padding="32,0">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel VerticalAlignment="Center" Spacing="3">
+                                    <TextBlock Text="{Binding PageTitle}" FontSize="25" FontWeight="SemiBold" Foreground="#171A1F" />
+                                    <TextBlock Text="{Binding PageSubtitle}" FontSize="13" Foreground="#858C95" />
+                                </StackPanel>
+                                <Button Grid.Column="1" Classes="icon-button" Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding Home.AddApplicationCommand}" IsVisible="{Binding CanAddApplication}" ToolTip.Tip="Add application" />
+                            </Grid>
+                        </Border>
+
+                        <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" />
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
