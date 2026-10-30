@@ -16,6 +16,7 @@
     ExtendClientAreaTitleBarHeightHint="42"
     ExtendClientAreaToDecorationsHint="True"
     WindowDecorations="BorderOnly"
+    WindowStartupLocation="CenterScreen" 
     Icon="/Assets/avalonia-logo.ico"
     mc:Ignorable="d">
 
@@ -100,7 +101,7 @@
                         <ItemsControl ItemsSource="{Binding NavigationItems}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="vm:NavigationItemViewModel">
-                                    <Button Classes="nav-item" Classes.selected="{Binding IsSelected}" Command="{Binding Command}">
+                                    <Button Margin="0,8,0,0" Classes="nav-item" Classes.selected="{Binding IsSelected}" Command="{Binding Command}">
                                         <Grid ColumnDefinitions="34,*">
                                             <TextBlock Grid.Column="0" Classes="icon-glyph" Text="{Binding Icon}" VerticalAlignment="Center" />
                                             <TextBlock Grid.Column="1" Text="{Binding Label}" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
@@ -131,7 +132,7 @@
                                     <TextBlock Text="{Binding PageTitle}" FontSize="25" FontWeight="SemiBold" Foreground="#171A1F" />
                                     <TextBlock Text="{Binding PageSubtitle}" FontSize="13" Foreground="#858C95" />
                                 </StackPanel>
-                                <Button Grid.Column="1" Classes="icon-button" Content="&#xE710;" FontFamily="Segoe MDL2 Assets" Command="{Binding Home.AddApplicationCommand}" IsVisible="{Binding CanAddApplication}" ToolTip.Tip="Add application" />
+                                <Button Grid.Column="1" Classes="icon-button" Content="&#xE710;" FontFamily="Segoe MDL2 Assets" IsVisible="{Binding CanAddApplication}" ToolTip.Tip="Add application" />
                             </Grid>
                         </Border>
 

@@ -39,7 +39,7 @@ public partial class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        Home = new HomeViewModel(Applications, new RelayCommand(AddApplication));
+        Home = new HomeViewModel(Applications);
         Favorites = new FavoritesViewModel(Applications);
         Settings = new SettingsViewModel();
 
@@ -88,20 +88,11 @@ public partial class MainViewModel : ViewModelBase
             item.IsSelected = item.Label == title;
     }
 
-    private void AddApplication()
-    {
-        if (Applications.Any(application => application.Name == "新建工具"))
-            return;
-
-        var application = new AppItemViewModel("新建工具", "自定义快捷方式", "＋", "#E5F3F5", "explorer.exe");
-        Applications.Add(application);
-        application.PropertyChanged += ApplicationOnPropertyChanged;
-    }
+ 
 
     private void ApplicationOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(AppItemViewModel.IsFavorite))
-            Favorites.Refresh();
+        
     }
 }
 
@@ -157,77 +148,4 @@ public partial class AppItemViewModel : ViewModelBase
     }
 }
 
-public partial class NavigationItemViewModel : ViewModelBase
-{
-    public string Label { get; }
-    public string Icon { get; }
-    public ICommand Command { get; }
 
-    [ObservableProperty]
-    private bool isSelected;
-
-    public NavigationItemViewModel(string label, string icon, ICommand command)
-    {
-        Label = label;
-        Icon = icon;
-        Command = command;
-    }
-}
-
-public class HomeViewModel : ViewModelBase
-{
-    public ObservableCollection<AppItemViewModel> Applications { get; }
-    public ICommand AddApplicationCommand { get; }
-
-    public HomeViewModel(ObservableCollection<AppItemViewModel> applications, ICommand addApplicationCommand)
-    {
-        Applications = applications;
-        AddApplicationCommand = addApplicationCommand;
-    }
-}
-
-public partial class FavoritesViewModel : ViewModelBase
-{
-    public ObservableCollection<AppItemViewModel> FavoriteApps { get; } = new();
-
-    [ObservableProperty]
-    private bool hasFavorites;
-
-    [ObservableProperty]
-    private bool hasNoFavorites;
-
-    private readonly ObservableCollection<AppItemViewModel> allApplications;
-
-    public FavoritesViewModel(ObservableCollection<AppItemViewModel> allApplications)
-    {
-        this.allApplications = allApplications;
-        Refresh();
-    }
-
-    public void Refresh()
-    {
-        FavoriteApps.Clear();
-        foreach (var application in allApplications.Where(application => application.IsFavorite))
-            FavoriteApps.Add(application);
-
-        HasFavorites = FavoriteApps.Count > 0;
-        HasNoFavorites = !HasFavorites;
-    }
-}
-
-public partial class SettingsViewModel : ViewModelBase
-{
-    public ObservableCollection<string> ThemeOptions { get; } = new() { "跟随系统", "浅色", "深色" };
-
-    [ObservableProperty]
-    private bool launchOnStartup;
-
-    [ObservableProperty]
-    private bool minimizeToTray = true;
-
-    [ObservableProperty]
-    private bool compactCards;
-
-    [ObservableProperty]
-    private string selectedTheme = "跟随系统";
-}
