@@ -20,10 +20,6 @@
     Icon="/Assets/avalonia-logo.ico"
     mc:Ignorable="d">
 
-    <Design.DataContext>
-        <vm:MainViewModel />
-    </Design.DataContext>
-
     <Window.Styles>
         <Style Selector="Button.titlebar">
             <Setter Property="BorderThickness" Value="0" />
@@ -119,24 +115,34 @@
                     <Grid Grid.Row="0" PointerPressed="TitleBar_PointerPressed"
                           Background="Transparent" ZIndex="999">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0" Spacing="2">
-                            <Button Classes="titlebar" Foreground="#10B82A" Content="&#x25CF;" Command="{Binding MinimizeSelfCommand}" ToolTip.Tip="Minimize" />
-                            <Button Classes="titlebar" Foreground="#F2A900" Content="&#x25CF;" Command="{Binding MaximizeSelfCommand}" ToolTip.Tip="Maximize" />
-                            <Button Classes="titlebar" Foreground="#F04D50" Content="&#x25CF;" Command="{Binding CloseSelfCommand}" ToolTip.Tip="Close" />
+                            <Button Classes="titlebar" Foreground="#10B82A" Content="&#x25CF;" Click="Minimize_Click" ToolTip.Tip="最小化" />
+                            <Button Classes="titlebar" Foreground="#F2A900" Content="&#x25CF;" Click="Maximize_Click" ToolTip.Tip="最大化" />
+                            <Button Classes="titlebar" Foreground="#F04D50" Content="&#x25CF;" Click="Close_Click" ToolTip.Tip="关闭" />
                         </StackPanel>
                     </Grid>
 
                     <Grid Grid.Row="1" RowDefinitions="92,*">
                         <Border Grid.Row="0" Background="#F8F9FA" BorderBrush="#E8EAED" BorderThickness="0,0,0,1" Padding="32,0">
-                            <Grid ColumnDefinitions="*,Auto">
-                                <StackPanel VerticalAlignment="Center" Spacing="3">
-                                    <TextBlock Text="{Binding PageTitle}" FontSize="25" FontWeight="SemiBold" Foreground="#171A1F" />
-                                    <TextBlock Text="{Binding PageSubtitle}" FontSize="13" Foreground="#858C95" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Button Grid.Column="0" Classes="icon-button" Margin="0,0,14,0" VerticalAlignment="Center"
+                                        Content="&#xE72B;" FontFamily="Segoe MDL2 Assets" ToolTip.Tip="返回"
+                                        IsVisible="{Binding Navigation.CanGoBack}" Command="{Binding GoBackCommand}" />
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                    <TextBlock Text="{Binding Navigation.PageTitle}" FontSize="25" FontWeight="SemiBold" Foreground="#171A1F" />
+                                    <TextBlock Text="{Binding Navigation.PageSubtitle}" FontSize="13" Foreground="#858C95" />
                                 </StackPanel>
-                                <Button Grid.Column="1" Classes="icon-button" Content="&#xE710;" FontFamily="Segoe MDL2 Assets" IsVisible="{Binding CanAddApplication}" ToolTip.Tip="Add application" />
                             </Grid>
                         </Border>
 
-                        <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" />
+                        <TransitioningContentControl x:Name="PageContent" Grid.Row="1"
+                                                     Content="{Binding Navigation.CurrentPage}"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     VerticalContentAlignment="Stretch"
+                                                     ClipToBounds="True">
+                            <TransitioningContentControl.PageTransition>
+                                <CrossFade Duration="0:0:0.18" FadeInEasing="CubicEaseOut" FadeOutEasing="CubicEaseIn" />
+                            </TransitioningContentControl.PageTransition>
+                        </TransitioningContentControl>
                     </Grid>
                 </Grid>
             </Border>

@@ -1,151 +1,48 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Windows.Input;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using CommunityToolkit.Mvvm.ComponentModel;
+using QuicklyTools.Services;
+using QuicklyTools.ViewModels.Tools;
 using CommunityToolkit.Mvvm.Input;
 
 namespace QuicklyTools.ViewModels;
 
-public partial class MainViewModel : ViewModelBase
+public sealed class MainViewModel : ViewModelBase, IDisposable
 {
-    public ObservableCollection<AppItemViewModel> Applications { get; } = new();
-    public ObservableCollection<NavigationItemViewModel> NavigationItems { get; } = new();
+    public NavigationService Navigation { get; }
+    public IReadOnlyList<NavigationItemViewModel> NavigationItems { get; }
+    public IRelayCommand GoBackCommand { get; }
 
-    public HomeViewModel Home { get; }
-    public FavoritesViewModel Favorites { get; }
-    public SettingsViewModel Settings { get; }
-
-    [ObservableProperty]
-    private ViewModelBase currentPage;
-
-    [ObservableProperty]
-    private string pageTitle = "首页";
-
-    [ObservableProperty]
-    private string pageSubtitle = "快速访问常用工具";
-
-    [ObservableProperty]
-    private bool canAddApplication = true;
-
-    public ICommand MinimizeSelfCommand { get; }
-    public ICommand MaximizeSelfCommand { get; }
-    public ICommand CloseSelfCommand { get; }
-
-    public MainViewModel()
+    public MainViewModel(NavigationService navigation)
     {
-        Home = new HomeViewModel(Applications);
-        Favorites = new FavoritesViewModel(Applications);
-        Settings = new SettingsViewModel();
-
-        foreach (var application in Applications)
-            application.PropertyChanged += ApplicationOnPropertyChanged;
-
-        NavigationItems.Add(new NavigationItemViewModel("首页", "\uE80F", new RelayCommand(() => SelectPage(Home, "首页", "快速访问常用工具"))));
-        NavigationItems.Add(new NavigationItemViewModel("收藏", "\uE734", new RelayCommand(() => SelectPage(Favorites, "收藏", "你标记的常用工具"))));
-        NavigationItems.Add(new NavigationItemViewModel("设置", "\uE713", new RelayCommand(() => SelectPage(Settings, "设置", "调整 QuicklyTools 的使用方式"))));
-
-        NavigationItems[0].IsSelected = true;
-        CurrentPage = Home;
-
-        MinimizeSelfCommand = new RelayCommand(() =>
+        Navigation = navigation;
+        GoBackCommand = new RelayCommand(navigation.GoBack, () => navigation.CanGoBack);
+        NavigationItems = Array.AsReadOnly(new[]
         {
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow is not null)
-                desktop.MainWindow.WindowState = WindowState.Minimized;
+            new NavigationItemViewModel("首页", "快速访问常用工具", "\uE80F", typeof(HomeViewModel), navigation),
+            new NavigationItemViewModel("收藏", "你标记的常用工具", "\uE734", typeof(FavoritesViewModel), navigation),
+            new NavigationItemViewModel("设置", "调整 QuicklyTools 的使用方式", "\uE713", typeof(SettingsViewModel), navigation),
         });
 
-        MaximizeSelfCommand = new RelayCommand(() =>
-        {
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow is not null)
-            {
-                var window = desktop.MainWindow;
-                window.WindowState = window.WindowState == WindowState.Maximized
-                    ? WindowState.Normal
-                    : WindowState.Maximized;
-            }
-        });
-
-        CloseSelfCommand = new RelayCommand(() =>
-        {
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-                desktop.MainWindow?.Close();
-        });
+        Navigation.PropertyChanged += OnNavigationPropertyChanged;
+        NavigationItems[0].Command.Execute(null);
+        UpdateSelection();
     }
 
-    private void SelectPage(ViewModelBase page, string title, string subtitle)
+    private void OnNavigationPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        CurrentPage = page;
-        PageTitle = title;
-        PageSubtitle = subtitle;
-        CanAddApplication = page == Home;
+        if (e.PropertyName == nameof(NavigationService.CurrentPage))
+            UpdateSelection();
+        if (e.PropertyName == nameof(NavigationService.CanGoBack))
+            GoBackCommand.NotifyCanExecuteChanged();
+    }
 
+    private void UpdateSelection()
+    {
         foreach (var item in NavigationItems)
-            item.IsSelected = item.Label == title;
+            item.IsSelected = item.TargetPage == Navigation.CurrentPage?.GetType()
+                || item.TargetPage == typeof(HomeViewModel) && Navigation.CurrentPage is ToolViewModelBase;
     }
 
- 
-
-    private void ApplicationOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        
-    }
+    public void Dispose() => Navigation.PropertyChanged -= OnNavigationPropertyChanged;
 }
-
-public partial class AppItemViewModel : ViewModelBase
-{
-    public string Name { get; }
-    public string Description { get; }
-    public string Icon { get; }
-    public string Accent { get; }
-    public string Executable { get; }
-    public string? Arguments { get; }
-    public ICommand LaunchCommand { get; }
-    public ICommand ToggleFavoriteCommand { get; }
-
-    [ObservableProperty]
-    private bool isFavorite;
-
-    public AppItemViewModel(
-        string name,
-        string description,
-        string icon,
-        string accent,
-        string executable,
-        bool isFavorite = false,
-        string? arguments = null)
-    {
-        Name = name;
-        Description = description;
-        Icon = icon;
-        Accent = accent;
-        Executable = executable;
-        Arguments = arguments;
-        IsFavorite = isFavorite;
-        LaunchCommand = new RelayCommand(Launch);
-        ToggleFavoriteCommand = new RelayCommand(() => IsFavorite = !IsFavorite);
-    }
-
-    private void Launch()
-    {
-        try
-        {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = Executable,
-                Arguments = Arguments ?? string.Empty,
-                UseShellExecute = true,
-            });
-        }
-        catch (Exception)
-        {
-            // A launcher card should remain usable when an optional Windows tool is unavailable.
-        }
-    }
-}
-
-

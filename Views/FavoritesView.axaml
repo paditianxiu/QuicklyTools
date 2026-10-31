@@ -2,7 +2,22 @@
     x:Class="QuicklyTools.Views.FavoritesView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="using:QuicklyTools.ViewModels">
+    xmlns:vm="using:QuicklyTools.ViewModels"
+    x:DataType="vm:FavoritesViewModel">
+    <Grid>
+        <StackPanel IsVisible="{Binding HasNoFavorites}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+            <TextBlock Text="&#xE734;" FontFamily="Segoe MDL2 Assets" FontSize="40" Foreground="#A8B5C8" HorizontalAlignment="Center" />
+            <TextBlock Text="还没有收藏工具" FontSize="18" Foreground="#344054" HorizontalAlignment="Center" />
+            <TextBlock Text="点击工具卡片右上角的星标，即可在这里快速访问。" Foreground="#858C95" />
+        </StackPanel>
+        <ScrollViewer IsVisible="{Binding HasFavorites}" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding FavoriteApps}" Margin="24">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate><WrapPanel ItemWidth="240" ItemHeight="184" /></ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
 
    
 </UserControl>

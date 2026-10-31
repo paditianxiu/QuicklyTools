@@ -1,0 +1,39 @@
+<UserControl
+    x:Class="QuicklyTools.Views.ToolCardView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:QuicklyTools.ViewModels"
+    x:DataType="vm:AppItemViewModel">
+    <UserControl.Styles>
+        <Style Selector="Button.tool-card">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#E5E9F0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Button.tool-card:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#F0F5FF" />
+            <Setter Property="BorderBrush" Value="#A8C7FA" />
+        </Style>
+    </UserControl.Styles>
+    <Grid Margin="7">
+        <Button Classes="tool-card" Command="{Binding NavigateCommand}" ToolTip.Tip="{Binding Subtitle}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid RowDefinitions="48,Auto,*">
+                <Border Width="42" Height="42" HorizontalAlignment="Left" VerticalAlignment="Top"
+                        CornerRadius="12" Background="{Binding Accent}">
+                    <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="22"
+                               Foreground="#315DA8" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+                <TextBlock Grid.Row="1" Margin="0,8,0,5" Text="{Binding Title}" FontWeight="SemiBold" FontSize="16" Foreground="#202833" />
+                <TextBlock Grid.Row="2" Text="{Binding Subtitle}" FontSize="12" Foreground="#778394" TextWrapping="Wrap" />
+            </Grid>
+        </Button>
+        <Button Width="32" Height="32" Margin="0,12,12,0" Padding="0" HorizontalAlignment="Right" VerticalAlignment="Top"
+                Background="Transparent" BorderThickness="0" CornerRadius="8" FontFamily="Segoe MDL2 Assets"
+                Foreground="#C18A16" Content="{Binding FavoriteIcon}" Command="{Binding ToggleFavoriteCommand}" ToolTip.Tip="收藏 / 取消收藏" />
+    </Grid>
+</UserControl>

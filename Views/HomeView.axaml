@@ -2,6 +2,22 @@
     x:Class="QuicklyTools.Views.HomeView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="using:QuicklyTools.ViewModels">
+    xmlns:vm="using:QuicklyTools.ViewModels"
+    x:DataType="vm:HomeViewModel">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24,24,24,32" Spacing="14">
+            <Grid ColumnDefinitions="*,Auto" Margin="8,0">
+                <TextBlock Text="全部工具" FontSize="16" FontWeight="SemiBold" Foreground="#344054" />
+                <TextBlock Grid.Column="1" Text="{Binding Applications.Count, StringFormat='共 {0} 个工具'}" Foreground="#858C95" VerticalAlignment="Center" />
+            </Grid>
+            <ItemsControl ItemsSource="{Binding Applications}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate><WrapPanel ItemWidth="240" ItemHeight="184" /></ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+
+
 
 </UserControl>

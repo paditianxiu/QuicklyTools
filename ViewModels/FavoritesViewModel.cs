@@ -1,27 +1,27 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using System.Collections.Specialized;
+using QuicklyTools.Stores;
 
 namespace QuicklyTools.ViewModels;
 
-public partial class FavoritesViewModel : ViewModelBase
+public sealed class FavoritesViewModel : ViewModelBase, IDisposable
 {
-    public ObservableCollection<AppItemViewModel> FavoriteApps { get; } = new();
+    public ReadOnlyObservableCollection<AppItemViewModel> FavoriteApps { get; }
+    public bool HasFavorites => FavoriteApps.Count > 0;
+    public bool HasNoFavorites => !HasFavorites;
 
-    [ObservableProperty]
-    private bool hasFavorites;
-
-    [ObservableProperty]
-    private bool hasNoFavorites;
-
-    private readonly ObservableCollection<AppItemViewModel> allApplications;
-
-    public FavoritesViewModel(ObservableCollection<AppItemViewModel> allApplications)
+    public FavoritesViewModel(ApplicationStore applications)
     {
-        this.allApplications = allApplications;
+        FavoriteApps = applications.Favorites;
+        ((INotifyCollectionChanged)FavoriteApps).CollectionChanged += OnFavoritesChanged;
     }
 
+    private void OnFavoritesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(HasFavorites));
+        OnPropertyChanged(nameof(HasNoFavorites));
+    }
 
+    public void Dispose() => ((INotifyCollectionChanged)FavoriteApps).CollectionChanged -= OnFavoritesChanged;
 }

@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
-using System.Windows.Input;
+using QuicklyTools.Stores;
 
 namespace QuicklyTools.ViewModels;
 
-public class HomeViewModel : ViewModelBase
+public sealed class HomeViewModel(ApplicationStore applications) : ViewModelBase
 {
-    public ObservableCollection<AppItemViewModel> Applications { get; }
-
-    public HomeViewModel(ObservableCollection<AppItemViewModel> applications)
-    {
-        Applications = applications;
-     
-    }
+    public ReadOnlyObservableCollection<AppItemViewModel> Applications { get; } = applications.Applications;
 }

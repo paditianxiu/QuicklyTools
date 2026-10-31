@@ -1,0 +1,52 @@
+<UserControl
+    x:Class="QuicklyTools.Views.JsonTreeView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:QuicklyTools.ViewModels.Tools"
+    x:DataType="vm:JsonTreeViewModel">
+    <Grid Margin="24" RowDefinitions="Auto,Auto,*,Auto">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button Content="生成树" Command="{Binding VisualizeCommand}" IsEnabled="{Binding !IsBusy}" />
+            <Button Content="格式化" Command="{Binding FormatCommand}" IsEnabled="{Binding !IsBusy}" />
+            <Button Content="全部展开" Command="{Binding ExpandAllCommand}" IsEnabled="{Binding !IsBusy}" />
+            <Button Content="全部收起" Command="{Binding CollapseAllCommand}" IsEnabled="{Binding !IsBusy}" />
+            <Button Content="取消" Command="{Binding VisualizeCancelCommand}" IsVisible="{Binding IsBusy}" />
+        </StackPanel>
+        <TextBlock Grid.Row="1" Text="{Binding ErrorMessage}" Foreground="#C73939" TextWrapping="Wrap" Margin="0,10" />
+        <Grid Grid.Row="2" ColumnDefinitions="*,10,*">
+            <Grid RowDefinitions="Auto,*">
+                <TextBlock Text="JSON 文本" Foreground="#667085" Margin="0,0,0,8" />
+                <TextBox Grid.Row="1" Text="{Binding JsonText, Mode=TwoWay}" AcceptsReturn="True" AcceptsTab="True"
+                         TextWrapping="NoWrap" FontFamily="Consolas" FontSize="13" VerticalContentAlignment="Top" VerticalAlignment="Stretch"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         PlaceholderText="在这里粘贴 JSON…" IsEnabled="{Binding !IsBusy}" />
+            </Grid>
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Center" Background="#E5E9F0" />
+            <Grid Grid.Column="2" RowDefinitions="Auto,*">
+                <TextBlock Text="树形结构" Foreground="#667085" Margin="0,0,0,8" />
+                <Border Grid.Row="1" Background="White" BorderBrush="#D8DEE8" BorderThickness="1" CornerRadius="8" Padding="6">
+                    <TreeView ItemsSource="{Binding Roots}" ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <TreeView.Styles>
+                            <Style Selector="TreeViewItem" x:DataType="vm:JsonTreeNodeViewModel">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            </Style>
+                        </TreeView.Styles>
+                        <TreeView.ItemTemplate>
+                            <TreeDataTemplate x:DataType="vm:JsonTreeNodeViewModel" ItemsSource="{Binding Children}">
+                                <StackPanel Orientation="Horizontal" Spacing="7">
+                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="#315DA8" />
+                                    <TextBlock Text=":" Foreground="#98A2B3" />
+                                    <TextBlock Text="{Binding Value}" FontFamily="Consolas" Foreground="#344054" />
+                                </StackPanel>
+                            </TreeDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                </Border>
+            </Grid>
+        </Grid>
+        <StackPanel Grid.Row="3" Spacing="8" Margin="0,12,0,0">
+            <ProgressBar Height="3" IsIndeterminate="True" IsVisible="{Binding IsBusy}" />
+            <TextBlock Text="{Binding StatusMessage}" Foreground="#667085" />
+        </StackPanel>
+    </Grid>
+</UserControl>

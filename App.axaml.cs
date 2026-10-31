@@ -1,26 +1,33 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using QuicklyTools.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
+using QuicklyTools.DependencyInjection;
 using QuicklyTools.Views;
 
 namespace QuicklyTools;
 
 public partial class App : Application
 {
-    public override void Initialize()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
+    private ServiceProvider? services;
+
+    public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainViewModel(),
-            };
+            services = new ServiceCollection()
+                .AddQuicklyTools()
+                .BuildServiceProvider(new ServiceProviderOptions
+                {
+                    ValidateOnBuild = true,
+                    ValidateScopes = true,
+                });
+
+            DataTemplates.Add(services.GetRequiredService<ViewLocator>());
+            desktop.Exit += (_, _) => services?.Dispose();
+            desktop.MainWindow = services.GetRequiredService<MainWindow>();
         }
 
         base.OnFrameworkInitializationCompleted();
